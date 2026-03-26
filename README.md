@@ -1,18 +1,27 @@
 # Contract Intelligence Analyst
 
-An agentic RAG system that lets you chat with legal contracts. Upload any commercial agreement and ask questions in plain English — the agent finds the right clauses, flags risks, and compares terms across documents.
+An agentic RAG system that lets you chat with legal contracts. Upload any commercial agreement and ask questions in plain English. The agent finds relevant clauses, flags risks, and compares terms across documents.
 
-Built as a portfolio project to demonstrate end-to-end agentic RAG, local LLM deployment, and production-ready ML tooling.
+This project is built as a portfolio piece to demonstrate end-to-end agentic RAG, local LLM deployment, and production-ready ML tooling.
 
 ---
 
 ## What it does
 
-- **Chat with contracts** — ask "what are the termination clauses?" and get cited, grounded answers
-- **Risk flagging** — scans a contract for high-risk language (unlimited liability, auto-renewal, broad IP assignment) with HIGH / MEDIUM / LOW severity
-- **Clause extraction** — pull a specific clause type (payment, liability, non-compete, etc.) across all contracts at once
-- **Cross-contract comparison** — see how the same clause differs between agreements side by side
-- **Source transparency** — every answer cites which contract and chunk it came from
+* **Chat with contracts**
+  Ask questions like "What are the termination clauses?" and get grounded answers with citations.
+
+* **Risk flagging**
+  Scans contracts for high-risk language such as unlimited liability, auto-renewal, and broad IP assignment. Outputs severity levels: HIGH, MEDIUM, LOW.
+
+* **Clause extraction**
+  Extract specific clause types such as payment, liability, or non-compete across all contracts.
+
+* **Cross-contract comparison**
+  Compare how the same clause differs across agreements side by side.
+
+* **Source transparency**
+  Every answer includes references to the exact contract and chunk it came from.
 
 ---
 
@@ -20,63 +29,67 @@ Built as a portfolio project to demonstrate end-to-end agentic RAG, local LLM de
 
 ```
 contract-analyst/
-├── ingestion/        ← PDF parsing, chunking, embedding, FAISS index
+├── ingestion/        # PDF parsing, chunking, embedding, FAISS index
 │   ├── ingest.py
 │   ├── faiss.index
 │   └── chunks.pkl
-├── agent/            ← LangGraph agent with 4 tools
+├── agent/            # LangGraph agent with tools
 │   └── agent.py
-├── app/              ← Streamlit UI
+├── app/              # Streamlit UI
 │   └── app.py
-└── eval/             ← RAGAS evaluation (coming soon)
+└── eval/             # RAG evaluation (coming soon)
 ```
 
-**Ingestion pipeline:**
-1. Contracts are split into 512-character chunks with 64-character overlap using `RecursiveCharacterTextSplitter`
-2. Each chunk is embedded with `all-MiniLM-L6-v2` (384 dimensions) via `sentence-transformers`
-3. Embeddings are stored in a `FAISS IndexFlatIP` index for cosine similarity search
+### Ingestion pipeline
 
-**Agent layer:**
-The LangGraph `StateGraph` implements a ReAct loop — the LLM decides which tool to call based on the query, executes it, reasons over the result, and either calls another tool or returns a final answer.
+* Contracts are split into 512-character chunks with 64-character overlap using RecursiveCharacterTextSplitter
+* Each chunk is embedded using `all-MiniLM-L6-v2` (384 dimensions) from sentence-transformers
+* Embeddings are stored in a FAISS `IndexFlatIP` index for cosine similarity search
 
-Four tools:
-| Tool | Purpose |
-|---|---|
-| `vector_search` | General semantic search across all contracts |
-| `clause_extractor` | Extract a specific clause type with plain-English summaries |
-| `risk_flagger` | Structured risk report with severity tags |
-| `contract_comparator` | Side-by-side comparison of a clause across all contracts |
+### Agent layer
+
+The LangGraph StateGraph implements a ReAct loop. The LLM decides which tool to call, executes it, reasons over the result, and either calls another tool or returns a final answer.
+
+### Tools
+
+| Tool                  | Purpose                                  |
+| --------------------- | ---------------------------------------- |
+| `vector_search`       | General semantic search across contracts |
+| `clause_extractor`    | Extract specific clauses with summaries  |
+| `risk_flagger`        | Generate structured risk reports         |
+| `contract_comparator` | Compare clauses across contracts         |
 
 ---
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| LLM | Mistral 7B via Ollama (fully local, no API keys) |
-| Agent framework | LangGraph |
-| Embeddings | sentence-transformers all-MiniLM-L6-v2 |
-| Vector store | FAISS |
-| UI | Streamlit |
-| Chunking | LangChain RecursiveCharacterTextSplitter |
+| Layer           | Technology                                 |
+| --------------- | ------------------------------------------ |
+| LLM             | Mistral 7B via Ollama (local, no API keys) |
+| Agent framework | LangGraph                                  |
+| Embeddings      | sentence-transformers (all-MiniLM-L6-v2)   |
+| Vector store    | FAISS                                      |
+| UI              | Streamlit                                  |
+| Chunking        | LangChain RecursiveCharacterTextSplitter   |
 
 ---
 
 ## Setup
 
 ### Prerequisites
-- Python 3.10+
-- [Ollama](https://ollama.com) installed
 
-### 1. Clone and create virtual environment
+* Python 3.10 or higher
+* Ollama installed
 
-```bash
+### 1. Clone and create a virtual environment
+
+```
 git clone https://github.com/yourusername/contract-analyst.git
 cd contract-analyst
 python -m venv venv
 
 # Windows
-.\venv\Scripts\Activate
+.\venv\Scripts\activate
 
 # Mac/Linux
 source venv/bin/activate
@@ -84,33 +97,33 @@ source venv/bin/activate
 
 ### 2. Install dependencies
 
-```bash
+```
 pip install -r requirements.txt
 ```
 
-### 3. Pull the LLM
+### 3. Pull the model
 
-```bash
+```
 ollama pull mistral
 ```
 
 ### 4. Build the index
 
-```bash
+```
 python ingestion/ingest.py
 ```
 
-This chunks and embeds the contracts and saves the FAISS index to `ingestion/`.
+This step chunks and embeds contracts, then saves the FAISS index in the `ingestion/` directory.
 
 ### 5. Run the app
 
-```bash
+```
 streamlit run app/app.py
 ```
 
-Or run the CLI agent directly:
+Or run the agent directly:
 
-```bash
+```
 python agent/agent.py
 ```
 
@@ -118,56 +131,55 @@ python agent/agent.py
 
 ## Requirements
 
-```
-langchain
-langchain-community
-langchain-ollama
-langgraph
-faiss-cpu
-sentence-transformers
-pdfplumber
-numpy
-streamlit
-pandas
-```
+* langchain
+* langchain-community
+* langchain-ollama
+* langgraph
+* faiss-cpu
+* sentence-transformers
+* pdfplumber
+* numpy
+* streamlit
+* pandas
 
 ---
 
 ## Example queries
 
-```
-Flag all risks in SaaS_Agreement.txt
-Compare the liability clauses across contracts
-What are the payment terms in the Distribution_Agreement.txt?
-Which contracts have auto-renewal clauses?
-What are the termination clauses across all contracts?
-```
+* Flag all risks in `SaaS_Agreement.txt`
+* Compare liability clauses across contracts
+* What are the payment terms in `Distribution_Agreement.txt`?
+* Which contracts include auto-renewal clauses?
+* Show termination clauses across all contracts
 
 ---
 
-## What I learned building this (Note to Myself)
+## What I learned (Note to myself)
 
-The interesting engineering challenges were not where I expected them.
+Some of the most important challenges were not where I expected them.
 
-**Chunking strategy matters more than the LLM.** A termination clause that gets split across two chunks becomes unfindable — no matter how good the model is. Getting the chunk size (512 chars) and overlap (64 chars) right made a bigger difference to retrieval quality than any prompt engineering.
+* **Chunking matters more than the model**
+  If a clause is split across chunks, it becomes much harder to retrieve. Tuning chunk size (512 characters) and overlap (64 characters) improved retrieval quality more than prompt changes.
 
-**Agentic routing is genuinely useful at scale.** With a small corpus the LLM could answer from memory. The value of having four distinct tools becomes clear when you want different _types_ of answers — a semantic search answer looks completely different from a structured risk report, and forcing them through the same pipeline produces worse results for both.
+* **Agent routing becomes valuable with scale**
+  A single pipeline works for small datasets, but different query types need different tools. Semantic search, structured risk reports, and comparisons require different handling.
 
-**Local LLMs are production-viable for focused tasks.** Mistral 7B on Ollama handles tool-calling and structured output reliably for this domain. The latency is higher than a cloud API but the zero-cost, offline-capable, privacy-preserving tradeoff is worth it for enterprise contract analysis.
+* **Local LLMs are viable for focused use cases**
+  Mistral 7B running on Ollama can reliably handle tool usage and structured outputs. Latency is higher than cloud APIs, but the tradeoff is strong: no cost, offline capability, and better data privacy.
 
 ---
 
 ## Roadmap
 
-- [ ] RAGAS evaluation suite with faithfulness and relevance scores
-- [ ] PDF upload via Streamlit UI (re-index on the fly)
-- [ ] Concept drift detection on clause distributions using diagnost
-- [ ] Support for real CUAD dataset (500+ annotated commercial contracts)
+* Add RAG evaluation using RAGAS (faithfulness and relevance)
+* Enable PDF uploads via the Streamlit UI with dynamic re-indexing
+* Add concept drift detection for clause distributions
+* Support the CUAD dataset (500+ annotated contracts)
 
 ---
 
 ## Acknowledgements
 
-- [CUAD Dataset](https://www.atticusprojectai.org/cuad) — Contract Understanding Atticus Dataset
-- [LangGraph](https://github.com/langchain-ai/langgraph) — agent orchestration
-- [Ollama](https://ollama.com) — local LLM serving
+* CUAD Dataset (Contract Understanding Atticus Dataset)
+* LangGraph for agent orchestration
+* Ollama for local model serving
