@@ -1,0 +1,12 @@
+groq
+langchain
+langchain-community
+langchain-groq
+faiss-cpu
+pdfplumber
+sentence-transformers
+datasets
+numpy
+langgraph
+ragas
+streamlit
