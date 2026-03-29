@@ -37,7 +37,7 @@ contract-analyst/
 │   └── agent.py
 ├── app/              # Streamlit UI
 │   └── app.py
-└── eval/             # RAG evaluation (coming soon)
+└── eval/             # RAGAS evaluation suite, 20-question golden dataset
 ```
 
 ### Ingestion pipeline
@@ -84,7 +84,7 @@ The LangGraph StateGraph implements a ReAct loop. The LLM decides which tool to 
 ### 1. Clone and create a virtual environment
 
 ```
-git clone https://github.com/yourusername/contract-analyst.git
+git clone https://github.com/Eklavya20/contract-analyst.git
 cd contract-analyst
 python -m venv venv
 
@@ -154,7 +154,7 @@ python agent/agent.py
 
 ---
 
-## What I learned (Note to myself)
+## What I learned building this
 
 Some of the most important challenges were not where I expected them.
 
@@ -171,7 +171,7 @@ Some of the most important challenges were not where I expected them.
 
 ## Roadmap
 
-* Add RAG evaluation using RAGAS (faithfulness and relevance)
+* RAGAS evaluation suite — faithfulness 0.842, context recall 0.950
 * Enable PDF uploads via the Streamlit UI with dynamic re-indexing
 * Add concept drift detection for clause distributions
 * Support the CUAD dataset (500+ annotated contracts)
