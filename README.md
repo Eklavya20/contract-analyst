@@ -178,6 +178,25 @@ Some of the most important challenges were not where I expected them.
 
 ---
 
+## Evaluation results (RAGAS)
+
+Evaluated on a 20-question golden dataset derived from the contract corpus,
+using Mistral 7B as both the generator and judge.
+
+| Metric | Score | What it measures |
+|---|---|---|
+| Faithfulness | 0.842 | Answers grounded in retrieved context (no hallucination) |
+| Answer relevancy | 0.767 | Answer actually addresses the question |
+| Context precision | 0.901 | Retrieved chunks are relevant to the question |
+| Context recall | 0.950 | Relevant chunks are successfully retrieved |
+
+Notable failure cases: questions about auto-renewal and governing law scored
+lowest on faithfulness, traced to retrieval misses where the relevant clause
+fell outside the top-5 retrieved chunks. Increasing TOP_K from 5 to 7 is the
+next iteration.
+
+---
+
 ## Acknowledgements
 
 * CUAD Dataset (Contract Understanding Atticus Dataset)
